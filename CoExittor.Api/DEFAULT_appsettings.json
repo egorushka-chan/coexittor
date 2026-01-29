@@ -1,0 +1,12 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ConnectionStrings": {
+    "SqlServer": "Data Source=***;Initial Catalog=CoExittor;Integrated Security=True;TrustServerCertificate=True" // Вставить строку подключения сюда
+  },
+  "AllowedHosts": "*"
+}
