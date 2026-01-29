@@ -1,5 +1,4 @@
-﻿using CoExittor.Api.Domain.Models;
-using CoExittor.Api.Domain.Repositories;
+﻿using CoExittor.Api.Domain.Repositories;
 using CoExittor.Api.Infrastructure.Repositories;
 using CoExittor.Common.Models;
 using Microsoft.EntityFrameworkCore;

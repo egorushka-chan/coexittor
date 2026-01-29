@@ -1,4 +1,4 @@
-﻿using CoExittor.Api.Domain.Models.Interfaces;
+﻿using CoExittor.Common.Models.Interfaces;
 
 namespace CoExittor.Api.Domain.Repositories
 {

@@ -1,5 +1,4 @@
-﻿using CoExittor.Api.Domain.Models;
-using CoExittor.Common.Models;
+﻿using CoExittor.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoExittor.Api.Controllers

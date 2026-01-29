@@ -5,7 +5,7 @@ using CoExittor.Api.Application.Services.Interfaces;
 
 namespace CoExittor.Api.Application.Services
 {
-    internal class VotingService : IUserService
+    internal class VotingService : IVotingService
     {
     }
 }
