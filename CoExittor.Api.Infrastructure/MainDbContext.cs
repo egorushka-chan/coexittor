@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoExittor.Api.Infrastructure
 {
-    internal class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(options)
+    public class MainDbContext(DbContextOptions<MainDbContext> options) : DbContext(options)
     {
         public DbSet<Event> Events { get; set; }
         public DbSet<Participation> Participations { get; set; }

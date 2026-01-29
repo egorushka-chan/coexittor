@@ -10,9 +10,12 @@ namespace CoExittor.Api.Infrastructure
     {
         public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<MainDbContext>(options =>
+            services.AddDbContext<MainDbContext>(contextOptions =>
             {
-                options.UseSqlServer(connectionString);
+                contextOptions.UseSqlServer(connectionString, sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(2);
+                });
             });
 
             services.RegisterRepositories();
