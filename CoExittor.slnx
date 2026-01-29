@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/API/">
+    <Project Path="CoExittor.Api.Application/CoExittor.Api.Application.csproj" Id="b88b88b1-0f10-41e8-8602-cc29e49c9ca7" />
+    <Project Path="CoExittor.Api.Domain/CoExittor.Api.Domain.csproj" Id="cb404740-baf6-40ce-91af-40f4e53227d4" />
+    <Project Path="CoExittor.Api.Infrastructure/CoExittor.Api.Infrastructure.csproj" Id="c1d1cabc-a6aa-4993-a184-17cab11e3f6e" />
+    <Project Path="CoExittor.Api/CoExittor.Api.csproj" />
+  </Folder>
+  <Folder Name="/Элементы решения/">
+    <File Path="readme.md" />
+  </Folder>
+  <Project Path="CoExittor.Front/CoExittor.Front.csproj" Id="a75782c5-9960-4583-ba1b-a9f20f969fd2" />
+</Solution>
