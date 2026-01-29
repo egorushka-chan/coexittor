@@ -1,4 +1,5 @@
 ﻿using CoExittor.Api.Domain.Models;
+using CoExittor.Common.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoExittor.Api.Infrastructure

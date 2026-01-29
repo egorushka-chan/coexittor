@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoExittor.Api.Domain.Models.Interfaces
+namespace CoExittor.Common.Models.Interfaces
 {
     public interface IEntity
     {

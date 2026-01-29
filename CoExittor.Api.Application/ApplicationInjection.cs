@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CoExittor.Api.Application.Services;
+using CoExittor.Api.Application.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CoExittor.Api.Application
 {
@@ -6,6 +8,9 @@ namespace CoExittor.Api.Application
     {
         public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
         {
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IVotingService, IVotingService>();
+            services.AddScoped<IUserService, IUserService>();
             return services;
         }
     }
