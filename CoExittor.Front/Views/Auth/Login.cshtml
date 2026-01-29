@@ -1,0 +1,43 @@
+﻿@model UserAuthorizationDTO
+@{
+    ViewData["Title"] = "Авторизация пользователя";
+}
+
+<div class="center_element">
+    <p class="mt-3">
+        <i class="bi bi-info-circle text-primary me-2"></i>
+        Будьте добры, введите свой логин и пароль!
+    </p>
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { @action = "login" }))
+    {
+        <table align="center">
+            <tr>
+                <td class="align-middle">
+                    <i class="bi bi-person-circle text-secondary me-2"></i> Логин
+                </td>
+                <td>
+                    @Html.TextBoxFor(uModel => uModel.Email, new { @class = "form-control ms-2", placeholder = "Введите свой Email" })
+                </td>
+            </tr>
+            <tr>
+                <td class="align-middle">
+                    <i class="bi bi-key-fill text-secondary me-2"></i> Пароль
+                </td>
+                <td>
+                    @Html.PasswordFor(uModel => uModel.PlainPassword, new { @class = "form-control ms-2", placeholder = "Введите свой пароль" })
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Авторизация
+                    </button>
+                </td>
+            </tr>
+        </table>
+    }
+
+    @Html.ValidationSummary(false, "", new { @class = "text-danger mt-3" })
+</div>

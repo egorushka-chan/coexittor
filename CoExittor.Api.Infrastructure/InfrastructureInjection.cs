@@ -25,7 +25,8 @@ namespace CoExittor.Api.Infrastructure
 
         private static void RegisterRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IBaseRepository<User>, BaseRepository<User>>();
+            services.AddScoped<IBaseRepository<User>, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
     }
 }

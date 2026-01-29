@@ -9,5 +9,5 @@
     <File Path="readme.md" />
   </Folder>
   <Project Path="CoExittor.Common/CoExittor.Common.csproj" Id="28dad0c4-3bfe-4fd6-8c54-87dc4670412f" />
-  <Project Path="CoExittor.Front/CoExittor.Front.csproj" Id="a75782c5-9960-4583-ba1b-a9f20f969fd2" />
+  <Project Path="CoExittor.Front/CoExittor.Front.csproj" Id="68303be6-83ea-4201-84b5-596f860c9e7c" />
 </Solution>

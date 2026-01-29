@@ -1,33 +1,52 @@
-﻿using CoExittor.Api.Domain.Repositories;
+﻿using System.Threading;
+using CoExittor.Api.Domain.Repositories;
 using CoExittor.Common.Models.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoExittor.Api.Infrastructure.Repositories
 {
-    internal class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : IEntity
+    internal class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class, IEntity
     {
-        public Task CreateAsync(TEntity entity, CancellationToken cancellationToken)
+        protected readonly MainDbContext _context;
+
+        public BaseRepository(MainDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task CreateAsync(TEntity entity, CancellationToken token)
         {
-            throw new NotImplementedException();
+            _context.Set<TEntity>().Add(entity);
+            await _context.SaveChangesAsync(token);
         }
 
-        public Task<TEntity?> GetByIdAsync(long id, CancellationToken cancellationToken)
+        public async Task<List<TEntity>> GetAllAsync(CancellationToken token)
         {
-            throw new NotImplementedException();
+            return await _context.Set<TEntity>()
+                .AsNoTracking()
+                .ToListAsync(token);
         }
 
-        public Task<bool> RemoveByIdAsync(long id, CancellationToken cancellationToken)
+        public async Task<TEntity?> GetByIdAsync(long id, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return await _context.Set<TEntity>()
+                .Where(x => x.ID == id)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(token);
         }
 
-        public Task UpdateAsync(TEntity entity, CancellationToken cancellationToken)
+        public async Task<bool> RemoveByIdAsync(long id, CancellationToken token)
         {
-            throw new NotImplementedException();
+            int count = await _context.Set<TEntity>()
+                .Where(ent => ent.ID == id)
+                .ExecuteDeleteAsync(token);
+            return count > 0;
+        }
+
+        public async Task UpdateAsync(TEntity entity, CancellationToken token)
+        {
+            _context.Set<TEntity>().Update(entity);
+            await _context.SaveChangesAsync(token);
         }
     }
 }

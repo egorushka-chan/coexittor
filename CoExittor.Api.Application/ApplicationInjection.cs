@@ -9,8 +9,8 @@ namespace CoExittor.Api.Application
         public static IServiceCollection AddApplicationLayer(this IServiceCollection services)
         {
             services.AddScoped<IEventService, EventService>();
-            services.AddScoped<IVotingService, IVotingService>();
-            services.AddScoped<IUserService, IUserService>();
+            services.AddScoped<IVotingService, VotingService>();
+            services.AddScoped<IUserService, UserService>();
             return services;
         }
     }
