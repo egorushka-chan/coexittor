@@ -10,6 +10,7 @@ namespace CoExittor.Api.Domain.Models
         public string HashPassword { get; set; } = string.Empty;
         public bool IsActive { get; set; }
 
-        public List<Participant> Participations { get; set; } = [];
+        // Навигационные свойства EF Core
+        public List<Participation> Participations { get; set; } = [];
     }
 }

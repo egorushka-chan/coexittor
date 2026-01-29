@@ -1,0 +1,33 @@
+﻿using CoExittor.Api.Domain.Models.Interfaces;
+using CoExittor.Api.Domain.Repositories;
+
+namespace CoExittor.Api.Infrastructure.Repositories
+{
+    internal class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : IEntity
+    {
+        public Task CreateAsync(TEntity entity, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TEntity?> GetByIdAsync(long id, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RemoveByIdAsync(long id, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateAsync(TEntity entity, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

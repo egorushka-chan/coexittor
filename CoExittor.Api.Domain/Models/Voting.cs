@@ -2,14 +2,14 @@
 
 namespace CoExittor.Api.Domain.Models
 {
-    public class EventVoting : IEntity
+    public class Voting : IEntity
     {
         public long ID { get; set; }
-        public long EventParticipationID { get; set; }
+        public long ParticipationID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
-        public EventParticipation? EventParticipation { get; set; }
-        public Participant? Participant { get; set; }
+        // Навигационные свойства EF Core
+        public Participation? Participation { get; set; }
     }
 }

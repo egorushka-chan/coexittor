@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CoExittor.Api.Domain\CoExittor.Api.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
