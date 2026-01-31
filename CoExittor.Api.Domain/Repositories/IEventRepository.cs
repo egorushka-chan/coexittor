@@ -2,8 +2,9 @@
 
 namespace CoExittor.Api.Domain.Repositories
 {
-    public interface IEventRepository
+    public interface IEventRepository : IBaseRepository<Event>
     {
-        Task<Event?> GetEventByCodeAsync(string code, CancellationToken token);
+        Task<Event?> GetEventByCodeAsync(Guid eventCode, CancellationToken token);
+        Task<bool> AcceptEventAsync(Guid eventCode, CancellationToken token);
     }
 }

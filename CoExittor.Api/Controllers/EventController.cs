@@ -26,7 +26,7 @@ namespace CoExittor.Api.Controllers
 
         [HttpGet("by-code/{eventCode}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Event))]
-        public async Task<IActionResult> GetEventByCode([FromRoute] string eventCode, CancellationToken token)
+        public async Task<IActionResult> GetEventByCode([FromRoute] Guid eventCode, CancellationToken token)
         {
             Event? eventByCode = await _eventService.GetEventByCode(eventCode, token);
             return Ok(eventByCode);
@@ -36,13 +36,14 @@ namespace CoExittor.Api.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> CreateEvent(CreateEventDTO createEventDTO, CancellationToken token)
         {
-            string createdEventCode = await _eventService.CreateEvent(createEventDTO, token);
-            return CreatedAtAction(nameof(GetEventByCode), new { eventCode = createEventDTO });
+            Guid createdEventCode = await _eventService.CreateEvent(createEventDTO, token);
+            return CreatedAtAction(nameof(GetEventByCode), new { eventCode = createEventDTO.ToString() });
         }
 
         [HttpPost("participate/{eventCode}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> ParticipateInEvent(
-            [FromRoute] string eventCode,
+            [FromRoute] Guid eventCode,
             [FromBody] ParticipateEventDTO participateEventDTO,
             CancellationToken token)
         {
@@ -51,10 +52,19 @@ namespace CoExittor.Api.Controllers
         }
 
         [HttpGet("calculate/{eventCode}")]
-        public async Task<IActionResult> CalculateVote([FromRoute] string eventCode, CancellationToken token)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultDTO))]
+        public async Task<IActionResult> CalculateVote([FromRoute] Guid eventCode, CancellationToken token)
         {
-            ResultDTO result = await _eventService.CalculateResult(eventCode, token);
+            ResultDTO result = await _eventService.GetEventResult(eventCode, token);
             return Ok(result);
+        }
+
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [HttpPost("accept/{eventCode}")]
+        public async Task<IActionResult> AcceptEvent([FromRoute] Guid eventCode, CancellationToken token)
+        {
+            await _eventService.AcceptEvent(eventCode, token);
+            return NoContent();
         }
     }
 }

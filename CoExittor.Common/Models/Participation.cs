@@ -7,7 +7,10 @@ namespace CoExittor.Common.Models
         public long ID { get; set; }
         public long EventID { get; set; }
         public string Name { get; set; } = string.Empty;
-        public bool IsHost { get; set; }
+        public bool IsHost { get; set; } = false;
+        /// <summary>
+        /// Согласен ли участник с датой хоста
+        /// </summary>
         public bool IsAgreedWithDefault { get; set; }
         public long? LinkedUserID { get; set; }
 

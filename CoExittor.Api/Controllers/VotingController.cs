@@ -1,4 +1,6 @@
-﻿using CoExittor.Common.DTO.Voting;
+﻿using System.Threading.Tasks;
+using CoExittor.Api.Application.Services.Interfaces;
+using CoExittor.Common.DTO.Voting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoExittor.Api.Controllers
@@ -7,15 +9,23 @@ namespace CoExittor.Api.Controllers
     [Route("api/[controller]")]
     public class VotingController : ControllerBase
     {
+        private readonly IVotingService _votingService;
+
+        public VotingController(IVotingService votingService)
+        {
+            _votingService = votingService;
+        }
+
         /// <summary>
         /// Замещает голосования участника на новые
         /// </summary>
         [HttpPost("update/{eventCode}")]
-        public IActionResult UpdateVoting(
-            [FromRoute] string eventCode,
-            [FromBody] UpdateVotingDTO votingDTO)
+        public async Task<IActionResult> UpdateVoting(
+            [FromBody] UpdateVotingDTO votingDTO,
+            CancellationToken token)
         {
-            throw new NotImplementedException();
+            await _votingService.UpdateVotingAsync(votingDTO, token);
+            return NoContent();
         }
     }
 }

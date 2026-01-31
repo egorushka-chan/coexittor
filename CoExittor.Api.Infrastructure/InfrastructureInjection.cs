@@ -26,8 +26,10 @@ namespace CoExittor.Api.Infrastructure
         private static void RegisterRepositories(this IServiceCollection services)
         {
             services.AddScoped<IBaseRepository<User>, UserRepository>();
+            services.AddScoped<IBaseRepository<Participation>, BaseRepository<Participation>>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<IVotingRepository, VotingRepository>();
         }
     }
 }
