@@ -25,6 +25,9 @@ namespace CoExittor.Api.Infrastructure
             var user = modelBuilder.Entity<User>();
             user.HasKey(u => u.ID);
 
+            user.HasIndex(u => u.Email)
+                .IsUnique();
+
             user.HasMany(u => u.Participations)
                 .WithOne(p => p.LinkedUser)
                 .HasForeignKey(p => p.LinkedUserID);
@@ -34,6 +37,9 @@ namespace CoExittor.Api.Infrastructure
         {
             var eventBuilder = modelBuilder.Entity<Event>();
             eventBuilder.HasKey(e => e.ID);
+
+            eventBuilder.HasIndex(e => e.Code)
+                .IsUnique();
 
             eventBuilder.HasMany(e => e.Participants)
                 .WithOne(p => p.Event)

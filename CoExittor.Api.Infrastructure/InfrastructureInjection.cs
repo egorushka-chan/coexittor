@@ -27,6 +27,7 @@ namespace CoExittor.Api.Infrastructure
         {
             services.AddScoped<IBaseRepository<User>, UserRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
         }
     }
 }
