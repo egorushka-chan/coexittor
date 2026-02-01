@@ -1,9 +1,6 @@
 ﻿using System.Net;
-using System.Security.Claims;
 using CoExittor.Common.DTO.User;
-using CoExittor.Common.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +8,11 @@ namespace CoExittor.Front.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HttpClient _http;
 
         public AuthController(IHttpClientFactory httpClientFactory)
         {
-            _httpClientFactory = httpClientFactory;
+            _http = httpClientFactory.CreateClient("BackendClient");
         }
 
         [AllowAnonymous]
@@ -34,14 +31,12 @@ namespace CoExittor.Front.Controllers
                 return View("Login", model);
             }
 
-            HttpClient httpClient = _httpClientFactory.CreateClient("BackendClient");
-
             HttpRequestMessage request = new(HttpMethod.Post, "api/user/login")
             {
                 Content = JsonContent.Create(model)
             };
 
-            HttpResponseMessage response = await httpClient.SendAsync(request, token);
+            HttpResponseMessage response = await _http.SendAsync(request, token);
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 if (response.Headers.TryGetValues("Set-Cookie", out var setCookies))
@@ -75,7 +70,7 @@ namespace CoExittor.Front.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            return View("Login");
+            return Redirect("Login");
         }
 
         [HttpGet("register")]
@@ -92,17 +87,22 @@ namespace CoExittor.Front.Controllers
                 return View("Register", model);
             }
 
-            HttpClient httpClient = _httpClientFactory.CreateClient("BackendClient");
-
             HttpRequestMessage request = new(HttpMethod.Post, "api/user/register")
             {
                 Content = JsonContent.Create(model)
             };
 
-            HttpResponseMessage response = await httpClient.SendAsync(request, token);
+            HttpResponseMessage response = await _http.SendAsync(request, token);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created)
             {
+                // Backend издаёт cookie, возращаем его браузеру
+                if (response.Headers.TryGetValues("Set-Cookie", out var setCookies))
+                {
+                    foreach (var c in setCookies)
+                        HttpContext.Response.Headers.Append("Set-Cookie", c);
+                }
+
                 if (returnUrl is not null)
                 {
                     return Redirect(returnUrl);
@@ -112,10 +112,15 @@ namespace CoExittor.Front.Controllers
                     return RedirectToAction("Index", "Home");
                 }
             }
+            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                ModelState.AddModelError("", "Не удалось зарегистрироваться. Проверьте данные (возможно, email уже занят).");
+                return View("Register", model);
+            }
             else
             {
-                ModelState.AddModelError("", "Неверный логин или пароль");
-                return View("Login", model);
+                ModelState.AddModelError("", "Неизвестная ошибка при регистрации.");
+                return View("Register", model);
             }
         }
     }

@@ -1,0 +1,56 @@
+﻿@model UserRegistrationDTO
+@{
+    ViewData["Title"] = "Регистрация пользователя";
+}
+
+<div class="center_element">
+    <p class="mt-3">
+        <i class="bi bi-person-plus text-primary me-2"></i>
+        Создайте аккаунт, чтобы работать с событиями.
+    </p>
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { @action = "register" }))
+    {
+        <table align="center">
+            <tr>
+                <td class="align-middle">
+                    <i class="bi bi-person-badge text-secondary me-2"></i> Имя
+                </td>
+                <td>
+                    @Html.TextBoxFor(uModel => uModel.Name, new { @class = "form-control ms-2", placeholder = "Введите имя" })
+                </td>
+            </tr>
+            <tr>
+                <td class="align-middle">
+                    <i class="bi bi-envelope-at text-secondary me-2"></i> Email
+                </td>
+                <td>
+                    @Html.TextBoxFor(uModel => uModel.Email, new { @class = "form-control ms-2", placeholder = "Введите Email" })
+                </td>
+            </tr>
+            <tr>
+                <td class="align-middle">
+                    <i class="bi bi-key-fill text-secondary me-2"></i> Пароль
+                </td>
+                <td>
+                    @Html.PasswordFor(uModel => uModel.PlainPassword, new { @class = "form-control ms-2", placeholder = "Придумайте пароль" })
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td class="text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check2-circle me-1"></i> Зарегистрироваться
+                    </button>
+                </td>
+            </tr>
+        </table>
+    }
+
+    <div class="mt-3 text-center">
+        <span class="text-muted">Уже есть аккаунт?</span>
+        <a class="ms-1" href="/login">Войти</a>
+    </div>
+
+    @Html.ValidationSummary(false, "", new { @class = "text-danger mt-3" })
+</div>

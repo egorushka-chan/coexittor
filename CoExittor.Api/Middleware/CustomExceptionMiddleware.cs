@@ -50,13 +50,6 @@ namespace CoExittor.Api.Middleware
                 context.Response.StatusCode = response.Status;
                 context.Response.ContentType = "application/problem+json";
 
-                if (response.Status == (int)HttpStatusCode.InternalServerError && _environment.IsDevelopment())
-                {
-                    // Если требуется выводить ошибку в ответе
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(exception));
-                    return;
-                }
-
                 await context.Response.WriteAsync(JsonSerializer.Serialize(response));
             }
         }

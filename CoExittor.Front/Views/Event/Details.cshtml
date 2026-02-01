@@ -1,0 +1,75 @@
+﻿@model EventDetailsModel
+@{
+    ViewData["Title"] = "Событие";
+    var ev = Model.Event;
+}
+
+<div class="d-flex align-items-start justify-content-between mb-3">
+    <div>
+        <h2 class="mb-1">@ev.Name</h2>
+        <div class="text-muted">Код: <code>@ev.Code</code></div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary @(ev.IsAccepted ? "disabled" : "")" asp-action="Join" asp-route-code="@ev.Code" >Присоединиться</a>
+        <a class="btn btn-outline-secondary" asp-action="Result" asp-route-code="@ev.Code">Результат</a>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.Error))
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+else
+{
+    if (!string.IsNullOrWhiteSpace(ev.Description))
+    {
+        <div class="mb-3">@ev.Description</div>
+    }
+
+    <div class="card mb-3">
+        <div class="card-header">Участники (@(ev.Participants?.Count ?? 0))</div>
+        <div class="card-body">
+            @if (ev.Participants is null || ev.Participants.Count == 0)
+            {
+                <div class="text-muted">Пока никто не присоединился.</div>
+            }
+            else
+            {
+                <ul class="mb-0">
+                    @foreach (var p in ev.Participants)
+                    {
+                        <li class="mb-2">
+                            <div>
+                                <strong>@p.Name</strong>
+                                @if (p.IsHost)
+                                {
+                                    <span class="badge bg-secondary ms-1">host</span>
+                                }
+                            </div>
+
+                            @if (p.Votings is not null && p.Votings.Count > 0)
+                            {
+                                <div class="text-muted small">
+                                    @foreach (var v in p.Votings)
+                                    {
+                                        <div>@v.StartDate.ToString("yyyy-MM-dd HH:mm") — @v.EndDate.ToString("yyyy-MM-dd HH:mm")</div>
+                                    }
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <form asp-action="Accept" asp-route-code="@ev.Code" method="post">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-success" type="submit" @(ev.IsAccepted ? "disabled" : "")>
+                @(ev.IsAccepted ? "Событие уже принято" : "Принять (закрепить)")
+            </button>
+        </form>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">На главную</a>
+    </div>
+}
