@@ -80,14 +80,14 @@ namespace CoExittor.Api.Application.Services
 
         public async Task<List<Event>> GetAllEventsAsync(CancellationToken token)
         {
-            List<Event> allEvents = await _repository.GetAllAsync(token);
+            List<Event> allEvents = await _repository.GetFullAllAsync(token);
 
             return allEvents;
         }
 
-        public async Task<Event> GetEventByCode(Guid eventCode, CancellationToken token)
+        public async Task<Event> GetEventByCode(Guid code, CancellationToken token)
         {
-            Event? eventByCode = await _repository.GetEventByCodeAsync(eventCode, token) ??
+            Event? eventByCode = await _repository.GetEventByCodeAsync(code, token) ??
                 throw new EntityNotFoundException("События с таким кодом не существует");
 
             return eventByCode;

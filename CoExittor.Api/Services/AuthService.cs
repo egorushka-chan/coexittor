@@ -9,8 +9,13 @@ namespace CoExittor.Api.Services
     {
         public static async Task IssueCookie(User user, HttpContext context)
         {
-            List<Claim> claims = [new(ClaimTypes.Name, user.Name), new(ClaimTypes.Email, user.Email)];
-            ClaimsIdentity claimsIdentity = new(claims, "Login");
+            List<Claim> claims = 
+                [
+                new(ClaimTypes.Name, user.Name), 
+                new(ClaimTypes.Email, user.Email), 
+                new (ClaimTypes.NameIdentifier, user.ID.ToString())
+                ];
+            ClaimsIdentity claimsIdentity = new(claims, "Cookies");
             await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
         }
     }

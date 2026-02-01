@@ -1,0 +1,40 @@
+﻿@model EventDetailsModel
+@{
+    ViewData["Title"] = "Результат";
+    var ev = Model.Event;
+}
+
+<div class="d-flex align-items-start justify-content-between mb-3">
+    <div>
+        <h2 class="mb-1">Результат: @ev.Name</h2>
+        <div class="text-muted">Код: <code>@ev.Code</code></div>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Details" asp-route-code="@ev.Code">К событию</a>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.Error))
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+else if (Model.Result is null || Model.Result.AgreedDates is null || Model.Result.AgreedDates.Count == 0)
+{
+    <div class="alert alert-warning">
+        Пока нет пересечения дат, либо участники не проголосовали диапазонами.
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">Сошедшиеся диапазоны</div>
+        <div class="card-body">
+            <ul class="mb-0">
+                @foreach (var v in Model.Result.AgreedDates)
+                {
+                    <li>@v.StartDate.ToString("yyyy-MM-dd HH:mm") — @v.EndDate.ToString("yyyy-MM-dd HH:mm")</li>
+                }
+            </ul>
+        </div>
+    </div>
+}

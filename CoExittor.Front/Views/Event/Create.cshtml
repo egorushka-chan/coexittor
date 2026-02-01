@@ -1,0 +1,115 @@
+﻿@model CreateEventModel
+@{
+    ViewData["Title"] = "Создать событие";
+}
+
+<h2 class="mb-3">Создать событие</h2>
+
+<form method="post" asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-4">
+        <label asp-for="HostName" class="form-label"></label>
+        <input asp-for="HostName" class="form-control" />
+        <span asp-validation-for="HostName" class="text-danger"></span>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <span>Варианты дат (если пусто — событие считается фиксированным)</span>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="addVoting">+ добавить диапазон</button>
+        </div>
+        <div class="card-body">
+            <div id="votings">
+                @for (int i = 0; i < Model.Votings.Count; i++)
+                {
+                    <div class="row g-2 align-items-end voting-row mb-2">
+                        <div class="col-md-5">
+                            <label class="form-label">Начало</label>
+                            <input class="form-control" type="datetime-local"
+                                   name="Votings[@i].StartDate"
+                                   value="@(Model.Votings[i].StartDate == default ? "" : Model.Votings[i].StartDate.ToString("yyyy-MM-ddTHH:mm"))" />
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Конец</label>
+                            <input class="form-control" type="datetime-local"
+                                   name="Votings[@i].EndDate"
+                                   value="@(Model.Votings[i].EndDate == default ? "" : Model.Votings[i].EndDate.ToString("yyyy-MM-ddTHH:mm"))" />
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button type="button" class="btn btn-outline-danger removeVoting">Удалить</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="text-danger">
+        @Html.ValidationSummary()
+    </div>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-success" type="submit">Создать</button>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">Назад</a>
+    </div>
+</form>
+
+@section Scripts { 
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const container = document.getElementById('votings');
+            const addBtn = document.getElementById('addVoting');
+
+            function renumber() {
+                const rows = container.querySelectorAll('.voting-row');
+                rows.forEach((row, idx) => {
+                    const inputs = row.querySelectorAll('input');
+                    inputs.forEach(i => {
+                        if (i.name.includes('StartDate')) i.name = `Votings[${idx}].StartDate`;
+                        if (i.name.includes('EndDate')) i.name = `Votings[${idx}].EndDate`;
+                    });
+                });
+            }
+
+            addBtn.addEventListener('click', function () {
+                const idx = container.querySelectorAll('.voting-row').length;
+                const row = document.createElement('div');
+                row.className = 'row g-2 align-items-end voting-row mb-2';
+                row.innerHTML = `
+                    <div class="col-md-5">
+                        <label class="form-label">Начало</label>
+                        <input class="form-control" type="datetime-local" name="Votings[${idx}].StartDate" />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Конец</label>
+                        <input class="form-control" type="datetime-local" name="Votings[${idx}].EndDate" />
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="button" class="btn btn-outline-danger removeVoting">Удалить</button>
+                    </div>`;
+                container.appendChild(row);
+            });
+
+            container.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('removeVoting')) {
+                    e.target.closest('.voting-row').remove();
+                    renumber();
+                }
+            });
+        })();
+    </script>
+}
