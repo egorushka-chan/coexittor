@@ -1,8 +1,11 @@
-﻿using CoExittor.Common.DTO.Event;
+﻿using System.Reflection;
+using System.Security.Claims;
+using CoExittor.Common.DTO.Event;
 using CoExittor.Common.DTO.Voting;
 using CoExittor.Common.Models;
 using CoExittor.Front.Models;
 using CoExittor.Front.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoExittor.Front.Controllers
@@ -30,7 +33,7 @@ namespace CoExittor.Front.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            HttpContext.Request.Cookies.TryGetValue("UserID", out var userIDStr);
+            string? userIDStr = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault()?.Value;
             long? userID = userIDStr is null ? null : long.Parse(userIDStr);
 
             var dto = new CreateEventDTO
@@ -170,6 +173,23 @@ namespace CoExittor.Front.Controllers
             {
                 var ev = new Event { Code = code, Name = "Не найдено" };
                 return View(new EventDetailsModel { Event = ev, Error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpGet("list")]
+        public async Task<IActionResult> List(CancellationToken token)
+        {
+            try
+            {
+                List<Event> list = await _apiClient.GetAllEventsAsync(token);
+
+                return View(list);
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
             }
         }
     }

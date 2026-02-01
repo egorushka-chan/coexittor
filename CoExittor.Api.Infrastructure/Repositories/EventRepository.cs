@@ -23,5 +23,14 @@ namespace CoExittor.Api.Infrastructure.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(token);
         }
+
+        public async Task<List<Event>> GetFullAllAsync(CancellationToken token)
+        {
+            return await _context.Events
+                .Include(ev => ev.Participants)
+                .ThenInclude(part => part.Votings)
+                .AsNoTracking()
+                .ToListAsync(token);
+        }
     }
 }

@@ -28,6 +28,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Events" asp-action="Create">Создать событие</a>
                         </li>
+                        @if(Accessor.HttpContext?.User.Identity?.IsAuthenticated is true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Events" asp-action="List">Список событий</a>
+                            </li>
+                        }
                     </ul>
 
                     <ul class="navbar-nav">

@@ -6,5 +6,6 @@ namespace CoExittor.Api.Domain.Repositories
     {
         Task<Event?> GetEventByCodeAsync(Guid eventCode, CancellationToken token);
         Task<bool> AcceptEventAsync(Guid eventCode, CancellationToken token);
+        Task<List<Event>> GetFullAllAsync(CancellationToken token);
     }
 }

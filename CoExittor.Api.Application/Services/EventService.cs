@@ -80,7 +80,7 @@ namespace CoExittor.Api.Application.Services
 
         public async Task<List<Event>> GetAllEventsAsync(CancellationToken token)
         {
-            List<Event> allEvents = await _repository.GetAllAsync(token);
+            List<Event> allEvents = await _repository.GetFullAllAsync(token);
 
             return allEvents;
         }
