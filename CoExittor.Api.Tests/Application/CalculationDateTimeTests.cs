@@ -1,4 +1,4 @@
-﻿using CoExittor.Api.Application.Services;
+﻿using CoExittor.Api.Domain.Helpers;
 using CoExittor.Common.Models;
 
 namespace CoExittor.Api.Tests.Application
@@ -41,7 +41,7 @@ namespace CoExittor.Api.Tests.Application
                 ]
             };
             // Act
-            List<Voting> actual = EventService.CalculateAgreedDate(@event);
+            List<Voting> actual = EventVoteHelpers.CalculateAgreedDate(@event);
             // Assert
             Assert.Equal(expected, actual);
         }
@@ -88,7 +88,7 @@ namespace CoExittor.Api.Tests.Application
                 ]
             };
             // Act
-            List<Voting> actual = EventService.CalculateAgreedDate(@event);
+            List<Voting> actual = EventVoteHelpers.CalculateAgreedDate(@event);
             // Assert
             Assert.Single(actual);
             Assert.Equal(expected[0].StartDate, actual[0].StartDate);
@@ -137,7 +137,7 @@ namespace CoExittor.Api.Tests.Application
                 ]
             };
             // Act
-            List<Voting> actual = EventService.CalculateAgreedDate(@event);
+            List<Voting> actual = EventVoteHelpers.CalculateAgreedDate(@event);
             // Assert
             Assert.Single(actual);
             Assert.Equal(expected[0].StartDate, actual[0].StartDate);
@@ -208,7 +208,7 @@ namespace CoExittor.Api.Tests.Application
                 ]
             };
             // Act
-            List<Voting> actual = EventService.CalculateAgreedDate(@event);
+            List<Voting> actual = EventVoteHelpers.CalculateAgreedDate(@event);
             // Assert
             Assert.Single(actual);
             Assert.Equal(expected[0].StartDate, actual[0].StartDate);
@@ -302,7 +302,7 @@ namespace CoExittor.Api.Tests.Application
                 ]
             };
             // Act
-            List<Voting> actual = EventService.CalculateAgreedDate(@event);
+            List<Voting> actual = EventVoteHelpers.CalculateAgreedDate(@event);
             // Assert
             Assert.Single(actual);
             Assert.Equal(expected[0].StartDate, actual[0].StartDate);

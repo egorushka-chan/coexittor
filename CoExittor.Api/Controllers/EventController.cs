@@ -1,5 +1,6 @@
 ﻿using CoExittor.Api.Application.Services.Interfaces;
 using CoExittor.Common.DTO.Event;
+using CoExittor.Common.DTO.Message;
 using CoExittor.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace CoExittor.Api.Controllers
 
         [HttpGet("by-code/{eventCode}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Event))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(DefaultErrorMessage))]
         public async Task<IActionResult> GetEventByCode([FromRoute] Guid eventCode, CancellationToken token)
         {
             Event? eventByCode = await _eventService.GetEventByCode(eventCode, token);
@@ -34,6 +36,7 @@ namespace CoExittor.Api.Controllers
 
         [HttpPost("create")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DefaultErrorMessage))]
         public async Task<IActionResult> CreateEvent(CreateEventDTO createEventDTO, CancellationToken token)
         {
             Guid createdEventCode = await _eventService.CreateEvent(createEventDTO, token);
@@ -42,6 +45,8 @@ namespace CoExittor.Api.Controllers
 
         [HttpPost("participate/{eventCode}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(DefaultErrorMessage))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DefaultErrorMessage))]
         public async Task<IActionResult> ParticipateInEvent(
             [FromRoute] Guid eventCode,
             [FromBody] ParticipateEventDTO participateEventDTO,
@@ -53,6 +58,7 @@ namespace CoExittor.Api.Controllers
 
         [HttpGet("calculate/{eventCode}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(DefaultErrorMessage))]
         public async Task<IActionResult> CalculateVote([FromRoute] Guid eventCode, CancellationToken token)
         {
             ResultDTO result = await _eventService.GetEventResult(eventCode, token);
@@ -60,6 +66,7 @@ namespace CoExittor.Api.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(DefaultErrorMessage))]
         [HttpPost("accept/{eventCode}")]
         public async Task<IActionResult> AcceptEvent([FromRoute] Guid eventCode, CancellationToken token)
         {

@@ -1,16 +1,12 @@
 using System.Text.Json.Serialization;
 using CoExittor.Api.Application;
 using CoExittor.Api.Infrastructure;
+using CoExittor.Api.Middleware;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Test
-builder.Services.AddDataProtection()
-    .SetApplicationName("CoExittor") // одинаково в обоих
-    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\shared-dp-keys"));
 
 string connectionString = builder.Configuration.GetConnectionString("SqlServer")
     ?? throw new InvalidOperationException("—трока подключени€ SqlServer не найдена, критическа€ ошибка.");
@@ -26,12 +22,7 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.Cookie.Name = "CoExittor.AuthCookie";
-        options.Cookie.Path = "/";
-    });
+AuthSingleCookieWithFront(builder.Services);
 
 builder.Services.AddApplicationLayer();
 builder.Services.AddInfrastructureLayer(connectionString);
@@ -53,6 +44,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+// app.UseMiddleware<CustomExceptionMiddleware>();
+app.UseExceptionMiddleware();
+
 app.MapControllers();
 
 // јвтомиграци€
@@ -63,3 +57,18 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+// Cookie, которые издаютс€ в backend и frontend, применимы везде
+static void AuthSingleCookieWithFront(IServiceCollection services)
+{
+    services.AddDataProtection()
+        .SetApplicationName("CoExittor") // одинаково в бекенде и хосте
+        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\shared-dp-keys"));
+
+    services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.Cookie.Name = "CoExittor.AuthCookie";
+            options.Cookie.Path = "/";
+        });
+}

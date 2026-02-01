@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CoExittor.Api.Application.Services.Interfaces;
+using CoExittor.Common.DTO.Message;
 using CoExittor.Common.DTO.Voting;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,8 @@ namespace CoExittor.Api.Controllers
         /// </summary>
         [HttpPost("update")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(DefaultErrorMessage))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DefaultErrorMessage))]
         public async Task<IActionResult> UpdateVoting(
             [FromBody] UpdateVotingDTO votingDTO,
             CancellationToken token)

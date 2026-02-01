@@ -1,11 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-using CoExittor.Api.Application.Services.Interfaces;
+﻿using CoExittor.Api.Application.Services.Interfaces;
+using CoExittor.Api.Domain.Exceptions;
+using CoExittor.Api.Domain.Helpers;
 using CoExittor.Api.Domain.Repositories;
 using CoExittor.Common.DTO.Event;
 using CoExittor.Common.DTO.Voting;
 using CoExittor.Common.Models;
-
-[assembly: InternalsVisibleTo("CoExittor.Api.Tests")]
 
 namespace CoExittor.Api.Application.Services
 {
@@ -13,9 +12,9 @@ namespace CoExittor.Api.Application.Services
     internal class EventService : IEventService
     {
         private readonly IEventRepository _repository;
-        private readonly IBaseRepository<Participation> _participationRepository;
+        private readonly IParticipationRepository _participationRepository;
 
-        public EventService(IEventRepository repository, IBaseRepository<Participation> participationRepository)
+        public EventService(IEventRepository repository, IParticipationRepository participationRepository)
         {
             _repository = repository;
             _participationRepository = participationRepository;
@@ -23,14 +22,10 @@ namespace CoExittor.Api.Application.Services
 
         public async Task<ResultDTO> GetEventResult(Guid eventCode, CancellationToken token)
         {
-            Event? @event = await _repository.GetEventByCodeAsync(eventCode, token);
-            if (@event is null)
-            {
-                // Логика выброса ошибки
-                return new ResultDTO(); // заглушка
-            }
+            Event? @event = await _repository.GetEventByCodeAsync(eventCode, token)
+                ?? throw new EntityNotFoundException("События с таким кодом не существует");
 
-            List<Voting> agreedVotings = CalculateAgreedDate(@event);
+            List<Voting> agreedVotings = EventVoteHelpers.CalculateAgreedDate(@event);
 
             return new ResultDTO
             {
@@ -44,6 +39,8 @@ namespace CoExittor.Api.Application.Services
 
         public async Task<Guid> CreateEvent(CreateEventDTO createEventDTO, CancellationToken token)
         {
+            EventVoteHelpers.CheckVoting(createEventDTO.Host.Votings);
+
             Guid guid = Guid.NewGuid();
             Event newEvent = new()
             {
@@ -77,7 +74,7 @@ namespace CoExittor.Api.Application.Services
             bool isEventExists = await _repository.AcceptEventAsync(eventCode, token);
             if(isEventExists is false)
             {
-                // Ошибка: нет такого события
+                throw new EntityNotFoundException("События с таким кодом не существует");
             }
         }
 
@@ -88,26 +85,21 @@ namespace CoExittor.Api.Application.Services
             return allEvents;
         }
 
-        public async Task<Event?> GetEventByCode(Guid eventCode, CancellationToken token)
+        public async Task<Event> GetEventByCode(Guid eventCode, CancellationToken token)
         {
-            Event? eventByCode = await _repository.GetEventByCodeAsync(eventCode, token);
+            Event? eventByCode = await _repository.GetEventByCodeAsync(eventCode, token) ??
+                throw new EntityNotFoundException("События с таким кодом не существует");
 
             return eventByCode;
         }
 
         public async Task ParticipateInEvent(Guid eventCode, ParticipateEventDTO participateEventDTO, CancellationToken token)
         {
-            Event? eventByCode = await _repository.GetEventByCodeAsync(eventCode, token);
-
-            if(eventByCode is null)
-            {
-                // Ошибка: события не существует
-                return; // заглушка
-            }
+            Event? eventByCode = await _repository.GetEventByCodeAsync(eventCode, token) 
+                ?? throw new EntityNotFoundException("События с таким кодом не существует");
             if (eventByCode.IsAccepted)
             {
-                // Ошибка: событие уже принято, нельзя участвовать
-                return; // заглушка
+                throw new BadRequestException("Событие уже принято и не принимает новых участников");
             }
 
             Participation participation = new()
@@ -137,65 +129,6 @@ namespace CoExittor.Api.Application.Services
             }
 
             await _participationRepository.CreateAsync(participation, token);
-        }
-
-
-        // Внутренние методы
-
-        internal static List<Voting> CalculateAgreedDate(Event @event)
-        {
-            // Берем в расчёт всех, кроме и так согласных, и хоста
-            var participations = @event.Participants
-                .Where(p => p.IsAgreedWithDefault is false && p.IsHost is false)
-                .ToList();
-
-            // Примем голосования хоста за базовые
-            List<Voting> agreedVotings = @event.Participants.First(p => p.IsHost).Votings;
-            foreach (var participation in participations)
-            {
-                List<Voting> participantVotings = participation.Votings;
-                // Проверяем, что у каждого участника есть хотя бы одно пересечение с каждым из базовых голосований
-                List<Voting> newBaseVotings = [];
-                foreach (var participantVoting in participantVotings)
-                {
-                    bool hasOverlap = agreedVotings.Any(pv => IsVotingOverlap(participantVoting, pv));
-                    if (!hasOverlap)
-                    {
-                        // Если у кого-то нет пересечений, то и нет согласованных дат
-                        continue;
-                    }
-
-                    // Ищем пересечения диапазонов, и на их основе обновляем базовые голосования
-                    foreach (var baseVoting in agreedVotings)
-                    {
-                        if (IsVotingOverlap(baseVoting, participantVoting))
-                        {
-                            // Вычисляем пересечение
-                            DateTime newStartDate = baseVoting.StartDate > participantVoting.StartDate
-                                ? baseVoting.StartDate
-                                : participantVoting.StartDate;
-
-                            DateTime newEndDate = baseVoting.EndDate < participantVoting.EndDate
-                                ? baseVoting.EndDate
-                                : participantVoting.EndDate;
-
-                            newBaseVotings.Add(new Voting
-                            {
-                                StartDate = newStartDate,
-                                EndDate = newEndDate
-                            });
-                        }
-                    }
-                }
-                agreedVotings = newBaseVotings;
-            }
-
-            return agreedVotings;
-        }
-
-        private static bool IsVotingOverlap(Voting voting1, Voting voting2)
-        {
-            return voting1.StartDate < voting2.EndDate && voting2.StartDate < voting1.EndDate;
         }
     }
 }

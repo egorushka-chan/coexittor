@@ -6,7 +6,7 @@ namespace CoExittor.Api.Application.Services.Interfaces
     public interface IEventService
     {
         Task<List<Event>> GetAllEventsAsync(CancellationToken token);
-        Task<Event?> GetEventByCode(Guid eventCode, CancellationToken token);
+        Task<Event> GetEventByCode(Guid eventCode, CancellationToken token);
         Task<Guid> CreateEvent(CreateEventDTO createEventDTO, CancellationToken token);
         Task ParticipateInEvent(Guid eventCode, ParticipateEventDTO participateEventDTO, CancellationToken token);
         Task<ResultDTO> GetEventResult(Guid eventCode, CancellationToken token);
