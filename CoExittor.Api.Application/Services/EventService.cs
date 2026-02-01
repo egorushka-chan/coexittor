@@ -58,7 +58,8 @@ namespace CoExittor.Api.Application.Services
                 Event = newEvent,
                 Name = createEventDTO.Host.Name,
                 LinkedUserID = createEventDTO.Host.LinkedUserID,
-                IsAgreedWithDefault = true
+                IsAgreedWithDefault = true,
+                IsHost = true
             };
             hostParticipation.Votings = [.. createEventDTO.Host.Votings.Select(votingDTO => new Voting
             {
@@ -145,7 +146,8 @@ namespace CoExittor.Api.Application.Services
         {
             // Берем в расчёт всех, кроме и так согласных, и хоста
             var participations = @event.Participants
-                .Where(p => p.IsAgreedWithDefault is false && p.IsHost is false);
+                .Where(p => p.IsAgreedWithDefault is false && p.IsHost is false)
+                .ToList();
 
             // Примем голосования хоста за базовые
             List<Voting> agreedVotings = @event.Participants.First(p => p.IsHost).Votings;
@@ -153,17 +155,17 @@ namespace CoExittor.Api.Application.Services
             {
                 List<Voting> participantVotings = participation.Votings;
                 // Проверяем, что у каждого участника есть хотя бы одно пересечение с каждым из базовых голосований
+                List<Voting> newBaseVotings = [];
                 foreach (var participantVoting in participantVotings)
                 {
                     bool hasOverlap = agreedVotings.Any(pv => IsVotingOverlap(participantVoting, pv));
                     if (!hasOverlap)
                     {
                         // Если у кого-то нет пересечений, то и нет согласованных дат
-                        return [];
+                        continue;
                     }
 
                     // Ищем пересечения диапазонов, и на их основе обновляем базовые голосования
-                    List<Voting> newBaseVotings = [];
                     foreach (var baseVoting in agreedVotings)
                     {
                         if (IsVotingOverlap(baseVoting, participantVoting))
@@ -184,8 +186,8 @@ namespace CoExittor.Api.Application.Services
                             });
                         }
                     }
-                    agreedVotings = newBaseVotings;
                 }
+                agreedVotings = newBaseVotings;
             }
 
             return agreedVotings;

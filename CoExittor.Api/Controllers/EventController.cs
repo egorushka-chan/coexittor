@@ -37,7 +37,7 @@ namespace CoExittor.Api.Controllers
         public async Task<IActionResult> CreateEvent(CreateEventDTO createEventDTO, CancellationToken token)
         {
             Guid createdEventCode = await _eventService.CreateEvent(createEventDTO, token);
-            return CreatedAtAction(nameof(GetEventByCode), new { eventCode = createEventDTO.ToString() });
+            return CreatedAtAction(nameof(GetEventByCode), new { eventCode = createdEventCode }, null);
         }
 
         [HttpPost("participate/{eventCode}")]

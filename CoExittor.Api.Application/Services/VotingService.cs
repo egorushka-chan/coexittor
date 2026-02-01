@@ -8,6 +8,12 @@ namespace CoExittor.Api.Application.Services
     internal class VotingService : IVotingService
     {
         private readonly IVotingRepository _repository;
+
+        public VotingService(IVotingRepository repository)
+        {
+            _repository = repository;
+        }
+
         public async Task UpdateVotingAsync(UpdateVotingDTO votingDTO, CancellationToken token)
         {
             List<Voting> newVoting = [.. votingDTO.Votings.Select(voting => new Voting

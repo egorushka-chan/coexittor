@@ -19,7 +19,8 @@ namespace CoExittor.Api.Controllers
         /// <summary>
         /// Замещает голосования участника на новые
         /// </summary>
-        [HttpPost("update/{eventCode}")]
+        [HttpPost("update")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateVoting(
             [FromBody] UpdateVotingDTO votingDTO,
             CancellationToken token)
